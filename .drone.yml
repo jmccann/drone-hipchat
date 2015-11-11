@@ -20,7 +20,7 @@ publish:
       branch: master
 
 plugin:
-  name: Slack
+  name: HipChat
   desc: Send build status notifications to your HipChat room.
   type: notify
   image: plugins/drone-hipchat

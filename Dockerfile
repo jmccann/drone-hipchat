@@ -1,4 +1,4 @@
-# Docker image for Drone's slack notification plugin
+# Docker image for Drone's hipchat notification plugin
 #
 #     CGO_ENABLED=0 go build -a -tags netgo
 #     docker build --rm=true -t plugins/drone-hipchat .
