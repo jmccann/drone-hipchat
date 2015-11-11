@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"unicode"
 
 	"github.com/drone/drone-plugin-go/plugin"
 )
@@ -55,15 +57,23 @@ func main() {
 
 // BuildMessage takes a number of drone parameters and builds a message.
 func BuildMessage(repo *plugin.Repo, build *plugin.Build, sys *plugin.System) string {
-	return fmt.Sprintf("*%s* <%s|%s/%s#%s> (%s) by %s",
-		build.Status,
-		fmt.Sprintf("%s/%s/%v", sys.Link, repo.FullName, build.Number),
-		repo.Owner,
-		repo.Name,
-		build.Commit[:8],
+	return fmt.Sprintf("%s %s (%s) by %s",
+		FirstRuneToUpper(build.Status),
+		BuildLink(repo, build, sys),
 		build.Branch,
 		build.Author,
 	)
+	/*
+		return fmt.Sprintf("*%s* <%s|%s/%s#%s> (%s) by %s",
+			build.Status,
+			fmt.Sprintf("%s/%s/%v", sys.Link, repo.FullName, build.Number),
+			repo.Owner,
+			repo.Name,
+			build.Commit[:8],
+			build.Branch,
+			build.Author,
+		)
+	*/
 }
 
 // Color takes a *plugin.Build object and determines the appropriate
@@ -77,4 +87,17 @@ func Color(build *plugin.Build) string {
 	default:
 		return "yellow"
 	}
+}
+
+func FirstRuneToUpper(s string) string {
+	a := []rune(s)
+	a[0] = unicode.ToUpper(a[0])
+	s = string(a)
+	return s
+}
+
+func BuildLink(repo *plugin.Repo, build *plugin.Build, sys *plugin.System) string {
+	repoName := repo.Owner + "/" + repo.Name
+	url := sys.Link + "/" + repoName + "/" + strconv.Itoa(build.Number)
+	return fmt.Sprintf("<a href=\"%s\">%s#%s</a>", url, repoName, build.Commit[:8])
 }
