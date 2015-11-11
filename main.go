@@ -6,23 +6,24 @@ import (
 	"strconv"
 	"unicode"
 
-	"github.com/drone/drone-plugin-go/plugin"
+	"github.com/drone/drone-go/drone"
+	"github.com/drone/drone-go/plugin"
 )
 
 // HipChat represents the settings needed to send a HipChat notification.
 type HipChat struct {
-	Notify bool   `json:"notify"`
-	From   string `json:"from"`
-	Room   string `json:"room_id_or_name"`
-	Token  string `json:"auth_token"`
+	Notify bool            `json:"notify"`
+	From   string          `json:"from"`
+	Room   drone.StringInt `json:"room_id_or_name"`
+	Token  string          `json:"auth_token"`
 }
 
 func main() {
 
 	// plugin settings
-	repo := plugin.Repo{}
-	build := plugin.Build{}
-	system := plugin.System{}
+	repo := drone.Repo{}
+	build := drone.Build{}
+	system := drone.System{}
 	vargs := HipChat{}
 
 	// set plugin parameters
@@ -33,12 +34,12 @@ func main() {
 
 	// parse the parameters
 	if err := plugin.Parse(); err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// create the HipChat client
-	client := NewClient(vargs.Room, vargs.Token)
+	client := NewClient(vargs.Room.String(), vargs.Token)
 
 	// build the HipChat message
 	msg := Message{
@@ -56,7 +57,7 @@ func main() {
 }
 
 // BuildMessage takes a number of drone parameters and builds a message.
-func BuildMessage(repo *plugin.Repo, build *plugin.Build, sys *plugin.System) string {
+func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
 	return fmt.Sprintf("%s %s (%s) by %s",
 		FirstRuneToUpper(build.Status),
 		BuildLink(repo, build, sys),
@@ -67,11 +68,11 @@ func BuildMessage(repo *plugin.Repo, build *plugin.Build, sys *plugin.System) st
 
 // Color takes a *plugin.Build object and determines the appropriate
 // notification/message color.
-func Color(build *plugin.Build) string {
+func Color(build *drone.Build) string {
 	switch build.Status {
-	case plugin.StateSuccess:
+	case drone.StatusSuccess:
 		return "green"
-	case plugin.StateFailure, plugin.StateError, plugin.StateKilled:
+	case drone.StatusFailure, drone.StatusError, drone.StatusKilled:
 		return "red"
 	default:
 		return "yellow"
@@ -87,7 +88,7 @@ func FirstRuneToUpper(s string) string {
 }
 
 // BuildLink builds the link to a build.
-func BuildLink(repo *plugin.Repo, build *plugin.Build, sys *plugin.System) string {
+func BuildLink(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
 	repoName := repo.Owner + "/" + repo.Name
 	url := sys.Link + "/" + repoName + "/" + strconv.Itoa(build.Number)
 	return fmt.Sprintf("<a href=\"%s\">%s#%s</a>", url, repoName, build.Commit[:8])
