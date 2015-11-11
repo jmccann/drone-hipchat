@@ -31,7 +31,7 @@ This plugin is responsible for sending build notifications to your HipChat room:
     "vargs": {
       "notify": true,
       "from": "drone",
-      "room_id_or_name": 1234567,
+      "room_id_or_name": "1234567",
       "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     }
 }
@@ -75,7 +75,7 @@ docker run -i plugins/drone-hipchat <<EOF
     "vargs": {
         "notify": true,
         "from": "drone",
-        "room_id_or_name": 1234567,
+        "room_id_or_name": "1234567",
         "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     }
 }
