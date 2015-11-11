@@ -63,17 +63,6 @@ func BuildMessage(repo *plugin.Repo, build *plugin.Build, sys *plugin.System) st
 		build.Branch,
 		build.Author,
 	)
-	/*
-		return fmt.Sprintf("*%s* <%s|%s/%s#%s> (%s) by %s",
-			build.Status,
-			fmt.Sprintf("%s/%s/%v", sys.Link, repo.FullName, build.Number),
-			repo.Owner,
-			repo.Name,
-			build.Commit[:8],
-			build.Branch,
-			build.Author,
-		)
-	*/
 }
 
 // Color takes a *plugin.Build object and determines the appropriate
@@ -89,6 +78,7 @@ func Color(build *plugin.Build) string {
 	}
 }
 
+// FirstRuneToUpper takes a string and capitalizes the first letter.
 func FirstRuneToUpper(s string) string {
 	a := []rune(s)
 	a[0] = unicode.ToUpper(a[0])
@@ -96,6 +86,7 @@ func FirstRuneToUpper(s string) string {
 	return s
 }
 
+// BuildLink builds the link to a build.
 func BuildLink(repo *plugin.Repo, build *plugin.Build, sys *plugin.System) string {
 	repoName := repo.Owner + "/" + repo.Name
 	url := sys.Link + "/" + repoName + "/" + strconv.Itoa(build.Number)
