@@ -1,7 +1,6 @@
 Use the HipChat plugin to send a message to your HipChat room when a build completes.
-You will need to supply Drone with a HipChat authentication token.
 
-You can learn more about HipChat authentication tokens here: https://www.hipchat.com/docs/apiv2/auth
+You will need to supply Drone with a HipChat authentication token. You can learn more about HipChat authentication tokens here: https://www.hipchat.com/docs/apiv2/auth
 
 The following parameters are used to configure the notification:
 
