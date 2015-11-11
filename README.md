@@ -29,8 +29,10 @@ This plugin is responsible for sending build notifications to your HipChat room:
         "author_email": "john.smith@gmail.com"
     },
     "vargs": {
-        "username": "drone",
-        "room": "dev"
+      "notify": true,
+      "from": "drone",
+      "room_id_or_name": 1234567,
+      "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     }
 }
 EOF
@@ -71,8 +73,10 @@ docker run -i plugins/drone-hipchat <<EOF
         "author_email": "john.smith@gmail.com"
     },
     "vargs": {
-        "username": "drone",
-        "room": "dev"
+        "notify": true,
+        "from": "drone",
+        "room_id_or_name": 1234567,
+        "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     }
 }
 EOF
