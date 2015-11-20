@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+	"text/template"
 	"unicode"
 
 	"github.com/drone/drone-go/drone"
@@ -12,11 +15,28 @@ import (
 
 // HipChat represents the settings needed to send a HipChat notification.
 type HipChat struct {
-	Notify bool            `json:"notify"`
-	From   string          `json:"from"`
-	Room   drone.StringInt `json:"room_id_or_name"`
-	Token  string          `json:"auth_token"`
+	Notify   bool            `json:"notify"`
+	From     string          `json:"from"`
+	Room     drone.StringInt `json:"room_id_or_name"`
+	Token    string          `json:"auth_token"`
+	Template Template        `json:"template"`
 }
+
+// Template represents template options for custom HipChat message
+// notifications on success and failure.
+type Template struct {
+	Success string `json:"success"`
+	Failure string `json:"failure"`
+	Default string `json:"default"`
+}
+
+type TemplateData struct {
+	Repo   *drone.Repo
+	Build  *drone.Build
+	System *drone.System
+}
+
+const defaultTemplate = "{{.statusFirstRuneUpper}} <a href=\"{{.buildURL}}\">{{.repo.FullName}}#{{.build.Commit}}</a> ({{.build.Branch}}) by {{.build.Author}}"
 
 func main() {
 
@@ -46,7 +66,7 @@ func main() {
 		From:    vargs.From,
 		Notify:  vargs.Notify,
 		Color:   Color(&build),
-		Message: BuildMessage(&repo, &build, &system),
+		Message: BuildMessage(&repo, &build, &system, vargs.Template),
 	}
 
 	// sends the HipChat message
@@ -57,13 +77,55 @@ func main() {
 }
 
 // BuildMessage takes a number of drone parameters and builds a message.
-func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
-	return fmt.Sprintf("%s %s (%s) by %s",
-		FirstRuneToUpper(build.Status),
-		BuildLink(repo, build, sys),
-		build.Branch,
-		build.Author,
-	)
+func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System, t Template) string {
+
+	// data for custom template rendering, if we need it
+	data := struct {
+		Repo     *drone.Repo
+		Build    *drone.Build
+		System   *drone.System
+		BuildURL string
+	}{repo, build, sys, BuildURL(repo, build, sys)}
+
+	// since notification messages are first based
+	// upon build status, we switch on that
+	switch build.Status {
+	case drone.StatusSuccess:
+		return Render(t.Success, t.Default, &data)
+	case drone.StatusFailure:
+		return Render(t.Failure, t.Default, &data)
+	default:
+		return Render(t.Default, defaultTemplate, &data)
+	}
+}
+
+// Render takes a string template and data interface to render the provided
+// template to a string.
+func Render(tmpl string, customDefault string, data interface{}) string {
+	if len(tmpl) == 0 {
+		if len(customDefault) > 0 {
+			tmpl = customDefault
+		} else {
+			tmpl = defaultTemplate
+		}
+	}
+
+	funcMap := template.FuncMap{
+		"StringToShouting": StringToShouting,
+		"FirstRuneToUpper": FirstRuneToUpper,
+	}
+
+	var buf bytes.Buffer
+	t, err := template.New("_").Funcs(funcMap).Parse(tmpl)
+	if err != nil {
+		fmt.Printf("Error parsing content template. %s\n", err)
+		os.Exit(1)
+	}
+	if err := t.Execute(&buf, &data); err != nil {
+		fmt.Printf("Error executing content template. %s\n", err)
+		os.Exit(1)
+	}
+	return buf.String()
 }
 
 // Color takes a *plugin.Build object and determines the appropriate
@@ -79,6 +141,11 @@ func Color(build *drone.Build) string {
 	}
 }
 
+// StringToShoutingBold transforms a string to bold uppercase
+func StringToShouting(s string) string {
+	return strings.ToUpper(s)
+}
+
 // FirstRuneToUpper takes a string and capitalizes the first letter.
 func FirstRuneToUpper(s string) string {
 	a := []rune(s)
@@ -87,9 +154,6 @@ func FirstRuneToUpper(s string) string {
 	return s
 }
 
-// BuildLink builds the link to a build.
-func BuildLink(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
-	repoName := repo.Owner + "/" + repo.Name
-	url := sys.Link + "/" + repoName + "/" + strconv.Itoa(build.Number)
-	return fmt.Sprintf("<a href=\"%s\">%s#%s</a>", url, repoName, build.Commit[:8])
+func BuildURL(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
+	return sys.Link + "/" + repo.FullName + "/" + strconv.Itoa(build.Number)
 }
