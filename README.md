@@ -32,7 +32,11 @@ This plugin is responsible for sending build notifications to your HipChat room:
       "notify": true,
       "from": "drone",
       "room_id_or_name": "1234567",
-      "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "template": {
+        "success": "{{ .repo.FullName }} successfully completed for {{ .build.Number }}",
+        "failure": "{{ .repo.FullName }} failed for {{ .build.Number }}"
+      }
     }
 }
 EOF
@@ -76,7 +80,11 @@ docker run -i plugins/drone-hipchat <<EOF
         "notify": true,
         "from": "drone",
         "room_id_or_name": "1234567",
-        "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "template": {
+          "success": "{{ .repo.FullName }} successfully completed for {{ .build.Number }}",
+          "failure": "{{ .repo.FullName }} failed for {{ .build.Number }}"
+        }
     }
 }
 EOF
