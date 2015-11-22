@@ -1,13 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 	"text/template"
 	"time"
-	"bytes"
 	"unicode"
 
 	"github.com/drone/drone-go/drone"
@@ -16,14 +15,19 @@ import (
 
 // HipChat represents the settings needed to send a HipChat notification.
 type HipChat struct {
-	Notify bool                `json:"notify"`
-	From   string              `json:"from"`
-	Room   drone.StringInt     `json:"room_id_or_name"`
-	Token  string              `json:"auth_token"`
-	Template map[string]string `json:"template"`
+	Notify   bool            `json:"notify"`
+	From     string          `json:"from"`
+	Room     drone.StringInt `json:"room_id_or_name"`
+	Token    string          `json:"auth_token"`
+	Template Template        `json:"template"`
 }
 
-const defaultTemplate = "{{.statusFirstRuneUpper}} <a href=\"{{.buildURL}}\">{{.repo.FullName}}#{{.build.Commit}}</a> ({{.build.Branch}}) by {{.build.Author}}"
+// Template represents template options for custom HipChat message
+// notifications on success and failure.
+type Template struct {
+	Success string `json:"success"`
+	Failure string `json:"failure"`
+}
 
 func main() {
 
@@ -53,7 +57,7 @@ func main() {
 		From:    vargs.From,
 		Notify:  vargs.Notify,
 		Color:   Color(&build),
-		Message: BuildMessage(&repo, &build, &system, &vargs),
+		Message: BuildMessage(&repo, &build, &system, vargs.Template),
 	}
 
 	// sends the HipChat message
@@ -64,47 +68,49 @@ func main() {
 }
 
 // BuildMessage takes a number of drone parameters and builds a message.
-func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System, vargs *HipChat) string {
-	var buf bytes.Buffer
-	message, err := template.New("_").Parse(GetTemplate(build, vargs))
-	if err != nil {
-		fmt.Printf("Error parsing content template. %s\n", err)
-		os.Exit(1)
-	}
-	message.Execute(&buf, map[string]interface{}{
-		"repo": repo,
-		"build": build,
-		"system": sys,
-		"statusShoutingBold": StringToShoutingBold(build.Status),
-		"statusFirstRuneUpper": FirstRuneToUpper(build.Status),
-		"buildURL": BuildURL(repo, build, sys),
-		"buildDuration": BuildDuration(build),
-	})
-	return buf.String()
+func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System, t Template) string {
 
-}
+	// data for custom template rendering, if we need it
+	data := struct {
+		Repo  *drone.Repo  `json:"repo"`
+		Build *drone.Build `json:"build"`
+	}{repo, build}
 
-func GetTemplate(build *drone.Build, vargs *HipChat) string {
-	if tmpl, ok := vargs.Template[NormalizeStatus(build)]; ok {
-		return tmpl
-	} else {
-		return defaultTemplate
+	// since notification messages are first based
+	// upon build status, we switch on that
+	switch build.Status {
+	case drone.StatusSuccess:
+		if len(t.Success) > 0 {
+			return Render(t.Success, &data)
+		}
+		return DefaultMessage(repo, build, sys)
+	case drone.StatusFailure:
+		if len(t.Failure) > 0 {
+			return Render(t.Failure, &data)
+		}
+		return DefaultMessage(repo, build, sys)
+	default:
+		return DefaultMessage(repo, build, sys)
 	}
 }
 
-// NormalizeStatus output is success or failure
-func NormalizeStatus(build *drone.Build) string {
-	if build.Status == drone.StatusSuccess {
-		return "success"
-	} else {
-		return "failure"
-	}
+// DefaultMessage takes a number of drone parameters and builds a default
+// notification message.
+func DefaultMessage(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
+	return fmt.Sprintf("<strong>%s</strong> %s (%s) by %s in %s </br> - %s ",
+		FirstRuneToUpper(build.Status),
+		BuildLink(repo, build, sys),
+		build.Branch,
+		build.Author,
+		time.Duration(build.Finished-build.Started)*time.Second,
+		build.Message,
+	)
 }
 
 // Color takes a *plugin.Build object and determines the appropriate
 // notification/message color.
 func Color(build *drone.Build) string {
-	switch build.Status{
+	switch build.Status {
 	case drone.StatusSuccess:
 		return "green"
 	case drone.StatusFailure, drone.StatusError, drone.StatusKilled:
@@ -112,11 +118,6 @@ func Color(build *drone.Build) string {
 	default:
 		return "yellow"
 	}
-}
-
-// StringToShoutingBold transforms a string to bold uppercase
-func StringToShoutingBold(s string) string {
-	return "<strong>" + strings.ToUpper(s) + "</strong>"
 }
 
 // FirstRuneToUpper takes a string and capitalizes the first letter.
@@ -127,12 +128,25 @@ func FirstRuneToUpper(s string) string {
 	return s
 }
 
-func BuildURL(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
-	return sys.Link + "/" + repo.FullName + "/" + strconv.Itoa(build.Number)
+// BuildLink builds the html link to a build.
+func BuildLink(repo *drone.Repo, build *drone.Build, sys *drone.System) string {
+	repoName := repo.Owner + "/" + repo.Name
+	url := sys.Link + "/" + repoName + "/" + strconv.Itoa(build.Number)
+	return fmt.Sprintf("<a href=\"%s\">%s#%s</a>", url, repoName, build.Commit[:8])
 }
 
-// BuildToDuration takes a *drone.Build and converts it to a duration
-func BuildDuration(build *drone.Build) string {
-	durationSeconds := build.Finished - build.Started
-	return fmt.Sprintf("%s", time.Duration(durationSeconds) * time.Second)
+// Render takes a string template and data interface to render the provided
+// template to a string.
+func Render(tmpl string, data interface{}) string {
+	var buf bytes.Buffer
+	t, err := template.New("_").Parse(tmpl)
+	if err != nil {
+		fmt.Printf("Error parsing content template. %s\n", err)
+		os.Exit(1)
+	}
+	if err := t.Execute(&buf, &data); err != nil {
+		fmt.Printf("Error executing content template. %s\n", err)
+		os.Exit(1)
+	}
+	return buf.String()
 }
