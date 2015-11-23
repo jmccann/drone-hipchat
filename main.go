@@ -31,16 +31,16 @@ type Template struct {
 
 func main() {
 
-	payload := drone.Payload{}
+	payload := &drone.Payload{}
 
-	fmt.Printf("%#v\n", plugin.Stdin)
+	fmt.Printf("%+v\n", plugin.Stdin)
 
 	if err := plugin.Stdin.Unmarshal(&payload); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("%#v\n", payload)
+	fmt.Printf("%+v\n", payload)
 
 	// plugin settings
 	repo := drone.Repo{}
