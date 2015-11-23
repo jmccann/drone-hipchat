@@ -31,6 +31,15 @@ type Template struct {
 
 func main() {
 
+	payload := drone.Payload{}
+
+	if err := plugin.Unmarshal(&payload); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println(payload)
+
 	// plugin settings
 	repo := drone.Repo{}
 	build := drone.Build{}
