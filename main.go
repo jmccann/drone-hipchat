@@ -33,6 +33,8 @@ func main() {
 
 	payload := drone.Payload{}
 
+	fmt.Println(plugin.Stdin)
+
 	if err := plugin.Stdin.Unmarshal(&payload); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
