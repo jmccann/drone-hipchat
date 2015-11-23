@@ -33,14 +33,14 @@ func main() {
 
 	payload := drone.Payload{}
 
-	fmt.Println(plugin.Stdin)
+	fmt.Printf("%#v\n", plugin.Stdin)
 
 	if err := plugin.Stdin.Unmarshal(&payload); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	fmt.Println(payload)
+	fmt.Printf("%#v\n", payload)
 
 	// plugin settings
 	repo := drone.Repo{}
