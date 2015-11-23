@@ -40,7 +40,7 @@ func (c *Client) Send(msg *Message) error {
 		return err
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode >= http.StatusBadRequest {
 		t, _ := ioutil.ReadAll(resp.Body)
 		return &HipChatError{resp.StatusCode, string(t)}
 	}
