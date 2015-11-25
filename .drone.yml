@@ -14,7 +14,7 @@ publish:
     username: drone
     password: $$DOCKER_PASS
     email: $$DOCKER_EMAIL
-    repo: drone/drone-hipchat
+    repo: plugins/drone-hipchat
     when:
       branch: master
 
@@ -22,7 +22,7 @@ plugin:
   name: HipChat
   desc: Send build status notifications to your HipChat room.
   type: notify
-  image: drone/drone-hipchat
+  image: plugins/drone-hipchat
   labels:
     - chat
     - messaging
