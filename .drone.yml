@@ -11,10 +11,10 @@ build:
 
 publish:
   docker:
-    username: jackspirou
+    username: drone
     password: $$DOCKER_PASS
     email: $$DOCKER_EMAIL
-    repo: jackspirou/drone-hipchat
+    repo: drone/drone-hipchat
     when:
       branch: master
 
@@ -22,7 +22,7 @@ plugin:
   name: HipChat
   desc: Send build status notifications to your HipChat room.
   type: notify
-  image: jackspirou/drone-hipchat
+  image: drone/drone-hipchat
   labels:
     - chat
     - messaging
