@@ -78,6 +78,8 @@ func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System, tmpl 
 		return err.Error()
 	}
 
+	fmt.Println(msg)
+
 	return msg
 }
 
