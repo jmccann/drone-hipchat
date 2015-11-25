@@ -33,10 +33,7 @@ This plugin is responsible for sending build notifications to your HipChat room:
       "from": "drone",
       "room_id_or_name": "1234567",
       "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      "template": {
-        "success": "{{ .repo.FullName }} successfully completed for {{ .build.Number }}",
-        "failure": "{{ .repo.FullName }} failed for {{ .build.Number }}"
-      }
+      "template": "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
     }
 }
 EOF
@@ -81,10 +78,7 @@ docker run -i plugins/drone-hipchat <<EOF
         "from": "drone",
         "room_id_or_name": "1234567",
         "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        "template": {
-          "success": "{{ .repo.FullName }} successfully completed for {{ .build.Number }}",
-          "failure": "{{ .repo.FullName }} failed for {{ .build.Number }}"
-        }
+        "template": "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
     }
 }
 EOF

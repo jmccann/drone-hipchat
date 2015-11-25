@@ -20,18 +20,5 @@ notify:
     notify: true
     room_id_or_name: 1234567
     auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,
-    template:
-      success: |
-        {{ .repo.FullName }} successfully completed for {{ .build.Number }}
-      failure: |
-        {{ .repo.FullName }} failed for {{ .build.Number }}
+    template: "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
 ```
-
-####Available Template Variables
-* **repo** - [Drone Repo Object](https://github.com/drone/drone/blob/master/model/repo.go)
-* **build** - [Drone Build Object](https://github.com/drone/drone/blob/master/model/build.go)
-* **system** - [Drone System Object](https://github.com/drone/drone/blob/master/model/system.go)
-* **statusShoutingBold** - The build.Status converted to uppercase and surrounded by bold HTML tags
-* **statusFirstRuneUpper** - The build.Status with the first rune uppercase
-* **buildURL** - URL to the drone build
-* **buildDuration** - Time it took to complete the build. ex. 24m15s
