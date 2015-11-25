@@ -9,6 +9,7 @@ The following parameters are used to configure the notification:
 Defaults to false.
 * **room_id_or_name** - The id or url encoded name of the room, valid length range: 1 - 100.
 * **auth_token** - Drone leverages the HipChat API and so it must pass an access token to authenticate correctly. If the token is not provided or invalid you will receive a 401 response.
+* **template** - Optional, supply this object to specify custom message templates.
 
 The following is a sample HipChat configuration for your .drone.yml file:
 
@@ -18,5 +19,6 @@ notify:
     from: drone
     notify: true
     room_id_or_name: 1234567
-    auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,
+    template: "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
 ```
