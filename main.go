@@ -44,7 +44,7 @@ func main() {
 
 	// determine notification template
 	if len(vargs.Template) == 0 {
-		vargs.Template = "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ sys.link }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
+		vargs.Template = "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
 	}
 
 	// build the HipChat message
@@ -77,8 +77,6 @@ func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System, tmpl 
 	if err != nil {
 		return err.Error()
 	}
-
-	fmt.Println(msg)
 
 	return msg
 }
