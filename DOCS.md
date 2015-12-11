@@ -1,24 +1,45 @@
-Use the HipChat plugin to send a message to your HipChat room when a build completes.
+Use this plugin for sending build status notifications via HipChat. You will
+need to supply Drone with a HipChat authentication token. You can learn more
+about authentication tokens [here](https://www.hipchat.com/docs/apiv2/auth). You
+can override the default configuration with the following parameters:
 
-You will need to supply Drone with a HipChat authentication token. You can learn more about HipChat authentication tokens here: https://www.hipchat.com/docs/apiv2/auth
+* `auth_token` - HipChat API token
+* `room_id_or_name` - ID or URL encoded name of the room
+* `from` - A label to be shown, defaults to `drone`
+* `notify` - Whether this message should trigger a user notification (change the
+  tab color, play a sound, notify mobile phones, etc). Each recipient's
+  notification preferences are taken into account, defaults to false
 
-The following parameters are used to configure the notification:
+## Example
 
-* **from** - A label to be shown in addition to the sender's name, valid length range: 0 - 25.
-* **notify** - Whether this message should trigger a user notification (change the tab color, play a sound, notify mobile phones, etc). Each recipient's notification preferences are taken into account.
-Defaults to false.
-* **room_id_or_name** - The id or url encoded name of the room, valid length range: 1 - 100.
-* **auth_token** - Drone leverages the HipChat API and so it must pass an access token to authenticate correctly. If the token is not provided or invalid you will receive a 401 response.
-* **template** - Optional, supply this object to specify custom message templates.
-
-The following is a sample HipChat configuration for your .drone.yml file:
+The following is a sample configuration in your .drone.yml file:
 
 ```yaml
 notify:
   hipchat:
+    auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    room_id_or_name: 1234567
+    notify: true
+```
+
+### Custom Messages
+
+In some cases you may want to customize the body of the HipChat message you can
+use custom templates. For the use case we expose the following additional
+parameters:
+
+* `template` - A handlebars template to create a custom payload body. For more
+  details take a look at the [docs](http://handlebarsjs.com/).
+
+Example configuration that generate a custom message:
+
+```yaml
+notify:
+  slack:
+    auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    room_id_or_name: 1234567
     from: drone
     notify: true
-    room_id_or_name: 1234567
-    auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,
-    template: "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
+    template: >
+      <strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}
 ```
