@@ -3,77 +3,69 @@ package main
 import (
 	"fmt"
 	"os"
-	"unicode"
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin"
 	"github.com/drone/drone-go/template"
 )
 
-// HipChat represents the settings needed to send a HipChat notification.
-type HipChat struct {
-	Notify   bool            `json:"notify"`
-	From     string          `json:"from"`
-	Room     drone.StringInt `json:"room_id_or_name"`
-	Token    string          `json:"auth_token"`
-	Template string          `json:"template"`
-}
+var (
+	build     string
+	buildDate string
+)
 
 func main() {
+	fmt.Printf("Drone HipChat Plugin built at %s\n", buildDate)
 
-	// plugin settings
+	system := drone.System{}
 	repo := drone.Repo{}
 	build := drone.Build{}
-	system := drone.System{}
-	vargs := HipChat{}
+	vargs := Params{}
 
-	// set plugin parameters
-	plugin.Param("build", &build)
-	plugin.Param("repo", &repo)
 	plugin.Param("system", &system)
+	plugin.Param("repo", &repo)
+	plugin.Param("build", &build)
 	plugin.Param("vargs", &vargs)
+	plugin.MustParse()
 
-	// parse the parameters
-	if err := plugin.Parse(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	// create the HipChat client
-	client := NewClient(vargs.Room.String(), vargs.Token)
-
-	// determine notification template
 	if len(vargs.Template) == 0 {
-		vargs.Template = "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
+		vargs.Template = defaultTemplate
 	}
 
-	// build the HipChat message
-	msg := Message{
-		From:    vargs.From,
-		Notify:  vargs.Notify,
-		Color:   Color(&build),
-		Message: BuildMessage(&repo, &build, &system, vargs.Template),
-	}
+	client := NewClient(
+		vargs.Room.String(),
+		vargs.Token)
 
-	// sends the HipChat message
-	if err := client.Send(&msg); err != nil {
+	err := client.Send(&Message{
+		From:   vargs.From,
+		Notify: vargs.Notify,
+		Color:  Color(&build),
+		Message: BuildMessage(
+			&system,
+			&repo,
+			&build,
+			vargs.Template),
+	})
+
+	if err != nil {
 		fmt.Println(err)
+
 		os.Exit(1)
+		return
 	}
 }
 
-// BuildMessage takes a number of drone parameters and builds a message.
-func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System, tmpl string) string {
-
-	// data for custom template rendering, if we need it
+func BuildMessage(system *drone.System, repo *drone.Repo, build *drone.Build, tmpl string) string {
 	payload := &drone.Payload{
-		Build:  build,
+		System: system,
 		Repo:   repo,
-		System: sys,
+		Build:  build,
 	}
 
-	// render template
-	msg, err := template.RenderTrim(tmpl, payload)
+	msg, err := template.RenderTrim(
+		tmpl,
+		payload)
+
 	if err != nil {
 		return err.Error()
 	}
@@ -81,8 +73,6 @@ func BuildMessage(repo *drone.Repo, build *drone.Build, sys *drone.System, tmpl 
 	return msg
 }
 
-// Color takes a *plugin.Build object and determines the appropriate
-// notification/message color.
 func Color(build *drone.Build) string {
 	switch build.Status {
 	case drone.StatusSuccess:
@@ -92,12 +82,4 @@ func Color(build *drone.Build) string {
 	default:
 		return "yellow"
 	}
-}
-
-// FirstRuneToUpper takes a string and capitalizes the first letter.
-func FirstRuneToUpper(s string) string {
-	a := []rune(s)
-	a[0] = unicode.ToUpper(a[0])
-	s = string(a)
-	return s
 }
