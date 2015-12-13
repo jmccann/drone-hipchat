@@ -1,10 +1,11 @@
 # drone-hipchat
-Drone plugin for sending HipChat notifications
 
+[![Build Status](http://beta.drone.io/api/badges/drone-plugins/drone-hipchat/status.svg)](http://beta.drone.io/drone-plugins/drone-hipchat)
+[![](https://badge.imagelayers.io/plugins/drone-hipchat:latest.svg)](https://imagelayers.io/?images=plugins/drone-hipchat:latest 'Get your own badge on imagelayers.io')
 
-## Overview
+Drone plugin for sending build status notifications via HipChat
 
-This plugin is responsible for sending build notifications to your HipChat room:
+## Usage
 
 ```sh
 ./drone-hipchat <<EOF
@@ -22,18 +23,16 @@ This plugin is responsible for sending build notifications to your HipChat room:
         "status": "success",
         "started_at": 1421029603,
         "finished_at": 1421029813,
-        "commit": "9f2849d5",
+        "commit": "64908ed2414b771554fda6508dd56a0c43766831",
         "branch": "master",
         "message": "Update the Readme",
         "author": "johnsmith",
         "author_email": "john.smith@gmail.com"
     },
     "vargs": {
-      "notify": true,
-      "from": "drone",
-      "room_id_or_name": "1234567",
-      "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      "template": "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
+        "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "room_id_or_name": "1234567",
+        "notify": true
     }
 }
 EOF
@@ -41,15 +40,14 @@ EOF
 
 ## Docker
 
-Build the Docker container. Note that we need to use the `-netgo` tag so that
-the binary is built without a CGO dependency:
+Build the Docker container using `make`:
 
 ```sh
-CGO_ENABLED=0 go build -a -tags netgo
+make deps build
 docker build --rm=true -t plugins/drone-hipchat .
 ```
 
-Send a HipChat notification:
+### Example
 
 ```sh
 docker run -i plugins/drone-hipchat <<EOF
@@ -67,18 +65,16 @@ docker run -i plugins/drone-hipchat <<EOF
         "status": "success",
         "started_at": 1421029603,
         "finished_at": 1421029813,
-        "commit": "9f2849d5",
+        "commit": "64908ed2414b771554fda6508dd56a0c43766831",
         "branch": "master",
         "message": "Update the Readme",
         "author": "johnsmith",
         "author_email": "john.smith@gmail.com"
     },
     "vargs": {
-        "notify": true,
-        "from": "drone",
-        "room_id_or_name": "1234567",
         "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        "template": "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}"
+        "room_id_or_name": "1234567",
+        "notify": true
     }
 }
 EOF
