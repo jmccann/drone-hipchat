@@ -66,7 +66,7 @@ type HipChatError struct {
 	Body string
 }
 
-// Error impliments the error interface.
+// Error implements the error interface.
 func (e *HipChatError) Error() string {
 	return fmt.Sprintf("HipChatError: %d %s", e.Code, e.Body)
 }
