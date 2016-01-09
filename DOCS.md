@@ -35,7 +35,7 @@ Example configuration that generate a custom message:
 
 ```yaml
 notify:
-  slack:
+  hipchat:
     auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     room_id_or_name: 1234567
     from: drone
