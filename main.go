@@ -55,6 +55,7 @@ func main() {
 	}
 }
 
+// BuildMessage renders the HipChat message from a template.
 func BuildMessage(system *drone.System, repo *drone.Repo, build *drone.Build, tmpl string) string {
 	payload := &drone.Payload{
 		System: system,
@@ -73,6 +74,7 @@ func BuildMessage(system *drone.System, repo *drone.Repo, build *drone.Build, tm
 	return msg
 }
 
+// Color determins the notfication color based upon the current build status.
 func Color(build *drone.Build) string {
 	switch build.Status {
 	case drone.StatusSuccess:

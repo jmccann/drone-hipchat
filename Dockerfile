@@ -4,7 +4,7 @@
 #     make deps build
 #     docker build --rm=true -t plugins/drone-hipchat .
 
-FROM alpine:3.2
+FROM alpine:3.3
 
 RUN apk update && \
   apk add \
