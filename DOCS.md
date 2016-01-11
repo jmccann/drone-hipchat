@@ -17,7 +17,7 @@ The following is a sample configuration in your .drone.yml file:
 ```yaml
 notify:
   hipchat:
-    auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    auth_token: xxxxxxxxxxxxxxx
     room_id_or_name: 1234567
     notify: true
 ```
@@ -36,7 +36,7 @@ Example configuration that generate a custom message:
 ```yaml
 notify:
   hipchat:
-    auth_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    auth_token: xxxxxxxxxxxxxxx
     room_id_or_name: 1234567
     from: drone
     notify: true
