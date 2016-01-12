@@ -25,36 +25,34 @@ type Message struct {
 
 // NewClient returns a new HipChat Client.
 func NewClient(room, token string) *Client {
-	return &Client{
-		URL: fmt.Sprintf(
-			notifyURL,
-			room,
-			token),
-	}
+	return &Client{URL: fmt.Sprintf(notifyURL, room, token)}
 }
 
 // Send takes a HipChat notification message and sends it.
 func (c *Client) Send(msg *Message) error {
-	body, _ := json.Marshal(msg)
+
+	body, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+
 	buf := bytes.NewReader(body)
+	_, err = http.NewRequest("POST", c.URL, buf)
+	if err != nil {
+		return err
+	}
 
-	http.NewRequest(
-		"POST",
-		c.URL,
-		buf)
-
-	resp, err := http.Post(
-		c.URL,
-		"application/json",
-		buf)
-
+	resp, err := http.Post(c.URL, "application/json", buf)
 	if err != nil {
 		return err
 	}
 
 	if resp.StatusCode >= http.StatusBadRequest {
-		t, _ := ioutil.ReadAll(resp.Body)
-		return &HipChatError{resp.StatusCode, string(t)}
+		t, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return NewHipChatError(resp.StatusCode, string(t))
 	}
 
 	return nil
@@ -64,6 +62,11 @@ func (c *Client) Send(msg *Message) error {
 type HipChatError struct {
 	Code int
 	Body string
+}
+
+// NewHipChatError takes a code and body and returns a new *HipChatError.
+func NewHipChatError(code int, body string) *HipChatError {
+	return &HipChatError{Code: code, Body: body}
 }
 
 // Error implements the error interface.
