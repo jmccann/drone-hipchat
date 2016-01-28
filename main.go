@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	buildDate string
+	buildDate       string
+	defaultTemplate = `<strong>{{ uppercasefirst build.status }}</strong> <a href="{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}`
 )
 
 func main() {
@@ -31,11 +32,9 @@ func main() {
 		vargs.Template = defaultTemplate
 	}
 
-	client := NewClient(
-		vargs.Room.String(),
-		vargs.Token)
+	client := NewClient(vargs.Room.String(), vargs.Token)
 
-	err := client.Send(&Message{
+	if err := client.Send(&Message{
 		From:   vargs.From,
 		Notify: vargs.Notify,
 		Color:  Color(&build),
@@ -44,11 +43,8 @@ func main() {
 			&repo,
 			&build,
 			vargs.Template),
-	})
-
-	if err != nil {
+	}); err != nil {
 		fmt.Println(err)
-
 		os.Exit(1)
 		return
 	}
@@ -56,16 +52,14 @@ func main() {
 
 // BuildMessage renders the HipChat message from a template.
 func BuildMessage(system *drone.System, repo *drone.Repo, build *drone.Build, tmpl string) string {
+
 	payload := &drone.Payload{
 		System: system,
 		Repo:   repo,
 		Build:  build,
 	}
 
-	msg, err := template.RenderTrim(
-		tmpl,
-		payload)
-
+	msg, err := template.RenderTrim(tmpl, payload)
 	if err != nil {
 		return err.Error()
 	}
