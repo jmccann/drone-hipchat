@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-const notifyURL = "https://api.hipchat.com/v2/room/%s/notification?auth_token=%s"
+var notifyURL = "https://api.hipchat.com/v2/room/%s/notification?auth_token=%s"
 
 // Client represents the HipChat client.
 type Client struct {
