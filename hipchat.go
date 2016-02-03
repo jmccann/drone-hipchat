@@ -8,7 +8,10 @@ import (
 	"net/http"
 )
 
-var notifyURL = "https://api.hipchat.com/v2/room/%s/notification?auth_token=%s"
+var (
+	defaultURL = "https://api.hipchat.com"
+	notifyPath = "%s/v2/room/%s/notification?auth_token=%s"
+)
 
 // Client represents the HipChat client.
 type Client struct {
@@ -24,8 +27,14 @@ type Message struct {
 }
 
 // NewClient returns a new HipChat Client.
-func NewClient(room, token string) *Client {
-	return &Client{URL: fmt.Sprintf(notifyURL, room, token)}
+func NewClient(url, room, token string) *Client {
+	if url == "" {
+		url = defaultURL
+	}
+
+	return &Client{
+		URL: fmt.Sprintf(notifyPath, url, room, token),
+	}
 }
 
 // Send takes a HipChat notification message and sends it.

@@ -15,8 +15,11 @@ func TestClient(t *testing.T) {
 	}))
 	defer hipchat.Close()
 
-	notifyURL = hipchat.URL + "/v2/room/%s/notification?auth_token=%s"
-	client := NewClient("TheIronThrone", "xyz")
+	client := NewClient(
+		hipchat.URL,
+		"TheIronThrone",
+		"xyz",
+	)
 
 	if err := client.Send(&Message{
 		From:    "John Snow",

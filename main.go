@@ -32,7 +32,11 @@ func main() {
 		vargs.Template = defaultTemplate
 	}
 
-	client := NewClient(vargs.Room.String(), vargs.Token)
+	client := NewClient(
+		vargs.URL,
+		vargs.Room.String(),
+		vargs.Token,
+	)
 
 	if err := client.Send(&Message{
 		From:   vargs.From,
