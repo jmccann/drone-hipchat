@@ -7,6 +7,7 @@ import (
 // Params are the parameters that the HipChat plugin can parse.
 type Params struct {
 	Notify   bool            `json:"notify"`
+	URL      string          `json:"url"`
 	From     string          `json:"from"`
 	Room     drone.StringInt `json:"room_id_or_name"`
 	Token    string          `json:"auth_token"`
