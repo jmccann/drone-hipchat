@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	buildDate       string
+	buildCommit     string
 	defaultTemplate = `<strong>{{ uppercasefirst build.status }}</strong> <a href="{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}`
 )
 
 func main() {
-	fmt.Printf("Drone HipChat Plugin built at %s\n", buildDate)
+	fmt.Printf("Drone HipChat Plugin built from %s\n", buildCommit)
 
 	system := drone.System{}
 	repo := drone.Repo{}
