@@ -4,7 +4,7 @@
 [![Coverage Status](https://aircover.co/badges/drone-plugins/drone-hipchat/coverage.svg)](https://aircover.co/drone-plugins/drone-hipchat)
 [![](https://badge.imagelayers.io/plugins/drone-hipchat:latest.svg)](https://imagelayers.io/?images=plugins/drone-hipchat:latest 'Get your own badge on imagelayers.io')
 
-Drone plugin to send build status notifications via HipChat
+Drone plugin to send build status notifications via HipChat. For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
 
 ## Binary
 
