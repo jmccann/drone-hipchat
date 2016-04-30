@@ -59,7 +59,8 @@ func main() {
 			ID:    build.Commit,
 			Style: "link",
 			Title: build.Status,
-			URL:   BuildTemplate(
+			Icon:  vargs.CardIcon,
+			URL: BuildTemplate(
 				&system,
 				&repo,
 				&build,
@@ -73,9 +74,6 @@ func main() {
 					&build,
 					vargs.CardTemplate,
 				),
-			},
-			Icon: Icon{
-				URL: vargs.CardIcon,
 			},
 		}
 	}

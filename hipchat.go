@@ -18,23 +18,20 @@ type Client struct {
 	URL string
 }
 
-// Icon takes an object
-type Icon struct {
-	URL string `json:"url"`
-}
-
+// Description represents the HipChat card description
 type Description struct {
 	Format string `json:"format"`
 	Value  string `json:"value"`
 }
 
+// Card represents the HipChat card
 type Card struct {
 	ID          string      `json:"id"`
 	Style       string      `json:"style"`
 	Title       string      `json:"title"`
 	URL         string      `json:"url"`
 	Description Description `json:"description"`
-	Icon        Icon        `json:"icon"`
+	Icon        string      `json:"icon"`
 }
 
 // Message represents the HipChat notification message.
