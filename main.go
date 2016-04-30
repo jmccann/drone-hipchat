@@ -12,6 +12,7 @@ import (
 var (
 	buildCommit     string
 	defaultTemplate = `<strong>{{ uppercasefirst build.status }}</strong> <a href="{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}`
+	defaultCardTitleTemplate = `{{ build.status }}`
 	defaultCardTemplate = `<strong>{{ repo.name }}</strong> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} <i>{{ build.message }}</i>`
 	defaultCardIcon = "http://readme.drone.io/logos/downstream.svg"
 )
@@ -47,19 +48,29 @@ func main() {
 	}
 
 	if vargs.UseCard {
-		if len(vargs.CardTemplate) == 0 {
-			vargs.CardTemplate = defaultCardTemplate
+
+		if len(vargs.CardTitleTemplate) == 0 {
+			vargs.CardTitleTemplate = defaultCardTitleTemplate
 		}
 
 		if len(vargs.CardIcon) == 0 {
 			vargs.CardIcon = defaultCardIcon
 		}
 
+		if len(vargs.CardTemplate) == 0 {
+			vargs.CardTemplate = defaultCardTemplate
+		}
+
 		message.Card = &Card{
 			ID:    build.Commit,
 			Style: "link",
-			Title: build.Status,
 			Icon:  vargs.CardIcon,
+			Title: BuildTemplate(
+				&system,
+				&repo,
+				&build,
+				vargs.CardTitleTemplate,
+			),
 			URL: BuildTemplate(
 				&system,
 				&repo,

@@ -47,10 +47,13 @@ notify:
 
 ### Cards
 
-For more advanced formatting, you may want to use a hipchat card. Not all hipchat clients support cards. The normal `template` will be used for those clients.
+For more advanced formatting, you may want to use a hipchat card. Not all hipchat
+clients support cards. The normal `template` will be used for those clients.
 
 * `use_card` - Turn on cards. Defaults to false
 * `card_icon` - Icon for card. Defaults to `http://readme.drone.io/logos/downstream.svg`
+* `card_title_template` - A plaintext only handlebars template to create a custom
+payload body. For more details take a look at the [docs](http://handlebarsjs.com/). Default used in example.
 * `card_template` - A handlebars template to create a custom payload body. For more
  details take a look at the [docs](http://handlebarsjs.com/). Default used in example.
 
@@ -67,5 +70,7 @@ notify:
       <strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}
     use_card: true
     card_icon: http://readme.drone.io/logos/downstream.svg
+    card_title_template: >
+      {{ build.status }}
     card_template: >
      <strong>{{ repo.name }}</strong> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} <i>{{ build.message }}</i>
