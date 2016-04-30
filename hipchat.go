@@ -62,8 +62,6 @@ func (c *Client) Send(msg *Message) error {
 		return err
 	}
 
-	fmt.Println(string(body))
-
 	buf := bytes.NewReader(body)
 	_, err = http.NewRequest("POST", c.URL, buf)
 	if err != nil {
