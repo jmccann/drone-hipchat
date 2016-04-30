@@ -12,8 +12,8 @@ type Params struct {
 	Room              drone.StringInt `json:"room_id_or_name"`
 	Token             string          `json:"auth_token"`
 	Template          string          `json:"template"`
-    UseCard           bool            `json:"use_card"`
-    CardTitleTemplate string          `json:"card_title_template"`
-    CardTemplate      string          `json:"card_template"`
-    CardIcon          string          `json:"card_icon"`
+	UseCard           bool            `json:"use_card"`
+	CardTitleTemplate string          `json:"card_title_template"`
+	CardTemplate      string          `json:"card_template"`
+	CardIcon          string          `json:"card_icon"`
 }
