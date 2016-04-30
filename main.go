@@ -12,6 +12,8 @@ import (
 var (
 	buildCommit     string
 	defaultTemplate = `<strong>{{ uppercasefirst build.status }}</strong> <a href="{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}`
+	defaultCardTemplate = `<strong>{{ repo.name }}</strong> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} <i>{{ build.message }}</i>`
+	defaultCardIcon = "http://readme.drone.io/logos/downstream.svg"
 )
 
 func main() {
@@ -32,22 +34,59 @@ func main() {
 		vargs.Template = defaultTemplate
 	}
 
+	message := &Message{
+		From:    vargs.From,
+		Notify:  vargs.Notify,
+		Color:   Color(&build),
+		Message: BuildTemplate(
+			&system,
+			&repo,
+			&build,
+			vargs.Template,
+		),
+	}
+
+	if vargs.UseCard {
+		if len(vargs.CardTemplate) == 0 {
+			vargs.CardTemplate = defaultCardTemplate
+		}
+
+		if len(vargs.CardIcon) == 0 {
+			vargs.CardIcon = defaultCardIcon
+		}
+
+		message.Card = &Card{
+			ID:    build.Commit,
+			Style: "link",
+			Title: build.Status,
+			URL:   BuildTemplate(
+				&system,
+				&repo,
+				&build,
+				"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}",
+			),
+			Description: Description{
+				Format: "html",
+				Value:  BuildTemplate(
+					&system,
+					&repo,
+					&build,
+					vargs.CardTemplate,
+				),
+			},
+			Icon: Icon{
+				URL: vargs.CardIcon,
+			},
+		}
+	}
+
 	client := NewClient(
 		vargs.URL,
 		vargs.Room.String(),
 		vargs.Token,
 	)
 
-	if err := client.Send(&Message{
-		From:   vargs.From,
-		Notify: vargs.Notify,
-		Color:  Color(&build),
-		Message: BuildMessage(
-			&system,
-			&repo,
-			&build,
-			vargs.Template),
-	}); err != nil {
+	if err := client.Send(message); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 		return
@@ -55,7 +94,7 @@ func main() {
 }
 
 // BuildMessage renders the HipChat message from a template.
-func BuildMessage(system *drone.System, repo *drone.Repo, build *drone.Build, tmpl string) string {
+func BuildTemplate(system *drone.System, repo *drone.Repo, build *drone.Build, tmpl string) string {
 
 	payload := &drone.Payload{
 		System: system,

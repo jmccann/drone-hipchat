@@ -18,12 +18,32 @@ type Client struct {
 	URL string
 }
 
+// Icon takes an object
+type Icon struct {
+	URL string `json:"url"`
+}
+
+type Description struct {
+	Format string `json:"format"`
+	Value  string `json:"value"`
+}
+
+type Card struct {
+	ID          string      `json:"id"`
+	Style       string      `json:"style"`
+	Title       string      `json:"title"`
+	URL         string      `json:"url"`
+	Description Description `json:"description"`
+	Icon        Icon        `json:"icon"`
+}
+
 // Message represents the HipChat notification message.
 type Message struct {
 	From    string `json:"from"`
 	Color   string `json:"color"`
 	Notify  bool   `json:"notify"`
 	Message string `json:"message"`
+	Card    *Card  `json:"card,omitempty"`
 }
 
 // NewClient returns a new HipChat Client.
@@ -44,6 +64,8 @@ func (c *Client) Send(msg *Message) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(string(body))
 
 	buf := bytes.NewReader(body)
 	_, err = http.NewRequest("POST", c.URL, buf)

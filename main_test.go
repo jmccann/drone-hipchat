@@ -31,7 +31,7 @@ func TestClient(t *testing.T) {
 	}
 }
 
-func TestBuildMessage(t *testing.T) {
+func TestBuildTemplate(t *testing.T) {
 	tests := []struct {
 		system  *drone.System
 		repo    *drone.Repo
@@ -67,7 +67,7 @@ Token: Error{"Unexpected character in expression: '}'"}`,
 	}
 
 	for _, test := range tests {
-		message := BuildMessage(test.system, test.repo, test.build, test.tmpl)
+		message := BuildTemplate(test.system, test.repo, test.build, test.tmpl)
 		if test.message != message {
 			t.Errorf("expected message:\n %s \n got message: \n %s \n", test.message, message)
 		}
