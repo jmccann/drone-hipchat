@@ -73,4 +73,4 @@ notify:
     card_title_template: >
       {{ build.status }}
     card_template: >
-     <strong>{{ repo.name }}</strong> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} <i>{{ build.message }}</i>
+     <strong>{{ repo.name }}</strong> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} <a href="{{ build.link_url }}">{{ truncate build.commit 8 }}</a> - <i>{{ build.message }}</i>
