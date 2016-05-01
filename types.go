@@ -13,7 +13,8 @@ type Params struct {
 	Token             string          `json:"auth_token"`
 	Template          string          `json:"template"`
 	UseCard           bool            `json:"use_card"`
-	CardTitleTemplate string          `json:"card_title_template"`
-	CardTemplate      string          `json:"card_template"`
-	CardIcon          string          `json:"card_icon"`
+	TitleTemplate     string          `json:"card_title_template"`
+	DescTemplate      string          `json:"card_desc_template"`
+	ActivityTemplate  string          `json:"card_activity_template"`
+	Icon              string          `json:"card_icon"`
 }

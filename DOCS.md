@@ -52,10 +52,9 @@ clients support cards. The normal `template` will be used for those clients.
 
 * `use_card` - Turn on cards. Defaults to false
 * `card_icon` - Icon for card. Defaults to `http://readme.drone.io/logos/downstream.svg`
-* `card_title_template` - A plaintext only handlebars template to create a custom
-payload body. For more details take a look at the [docs](http://handlebarsjs.com/). Default used in example.
-* `card_template` - A handlebars template to create a custom payload body. For more
- details take a look at the [docs](http://handlebarsjs.com/). Default used in example.
+* `card_activity_template` - A handlebars html template to create the card activity. Default used in example.
+* `card_title_template` - A plaintext only handlebars template to create the card title Default used in example.
+* `card_desc_template` - An optional handlebars html template to create the card description. Default used in example.
 
 Example configuration that generate a custom message:
 
@@ -70,7 +69,9 @@ notify:
       <strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}
     use_card: true
     card_icon: http://readme.drone.io/logos/downstream.svg
+    card_activity_template: >
+      <a href="{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}"><strong>{{ build.status }}</strong> {{ repo.name }} ({{ build.branch }})</a>
     card_title_template: >
-      {{ build.status }}
-    card_template: >
-     <strong>{{ repo.name }}</strong> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} <a href="{{ build.link_url }}">{{ truncate build.commit 8 }}</a> - <i>{{ build.message }}</i>
+      by {{ build.author }} in {{ duration build.started_at build.finished_at }}
+    card_desc_template: >
+      <a href="{{ build.link_url }}">{{ truncate build.commit 8 }}</a> - <i>{{ build.message }}</i>

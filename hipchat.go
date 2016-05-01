@@ -24,14 +24,22 @@ type Description struct {
 	Value  string `json:"value"`
 }
 
+// Activity represents the HipChat card activity
+type Activity struct {
+	HTML  string `json:"html"`
+	Icon  string `json:"icon,omitempty"`
+}
+
 // Card represents the HipChat card
 type Card struct {
-	ID          string      `json:"id"`
-	Style       string      `json:"style"`
-	Title       string      `json:"title"`
-	URL         string      `json:"url"`
-	Description Description `json:"description"`
-	Icon        string      `json:"icon"`
+	ID          string       `json:"id"`
+	Style       string       `json:"style"`
+	Format      string       `json:"format,omitempty"`
+	Title       string       `json:"title"`
+	URL         string       `json:"url"`
+	Icon        *string      `json:"icon,omitempty"`
+	Description *Description `json:"description,omitempty"`
+	Activity    Activity     `json:"activity,omitempty"`
 }
 
 // Message represents the HipChat notification message.

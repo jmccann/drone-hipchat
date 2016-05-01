@@ -12,9 +12,10 @@ import (
 var (
 	buildCommit     string
 	defaultTemplate = `<strong>{{ uppercasefirst build.status }}</strong> <a href="{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}`
-	defaultCardTitleTemplate = `{{ build.status }}`
-	defaultCardTemplate = `<strong>{{ repo.name }}</strong> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} <a href="{{ build.link_url }}">{{ truncate build.commit 8 }}</a> - <i>{{ build.message }}</i>`
-	defaultCardIcon = "http://readme.drone.io/logos/downstream.svg"
+	defaultTitleTemplate = `by {{ build.author }} in {{ duration build.started_at build.finished_at }}`
+	defaultDescTemplate = `<a href="{{ build.link_url }}">{{ truncate build.commit 8 }}</a> - <i>{{ build.message }}</i>`
+	defaultActivityTemplate = `<a href="{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}"><strong>{{ build.status }}</strong> {{ repo.name }} ({{ build.branch }})</a>`
+	defaultIcon = "http://readme.drone.io/logos/downstream.svg"
 )
 
 func main() {
@@ -48,45 +49,12 @@ func main() {
 	}
 
 	if vargs.UseCard {
-
-		if len(vargs.CardTitleTemplate) == 0 {
-			vargs.CardTitleTemplate = defaultCardTitleTemplate
-		}
-
-		if len(vargs.CardIcon) == 0 {
-			vargs.CardIcon = defaultCardIcon
-		}
-
-		if len(vargs.CardTemplate) == 0 {
-			vargs.CardTemplate = defaultCardTemplate
-		}
-
-		message.Card = &Card{
-			ID:    build.Commit,
-			Style: "link",
-			Icon:  vargs.CardIcon,
-			Title: BuildTemplate(
-				&system,
-				&repo,
-				&build,
-				vargs.CardTitleTemplate,
-			),
-			URL: BuildTemplate(
-				&system,
-				&repo,
-				&build,
-				"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}",
-			),
-			Description: Description{
-				Format: "html",
-				Value:  BuildTemplate(
-					&system,
-					&repo,
-					&build,
-					vargs.CardTemplate,
-				),
-			},
-		}
+		message.Card = BuildCard(
+			&system,
+			&repo,
+			&build,
+			&vargs,
+		)
 	}
 
 	client := NewClient(
@@ -102,6 +70,69 @@ func main() {
 	}
 }
 
+// BuildCard creates the HipChat card
+func BuildCard(system *drone.System, repo *drone.Repo, build *drone.Build, vargs *Params) *Card {
+	if len(vargs.TitleTemplate) == 0 {
+		vargs.TitleTemplate = defaultTitleTemplate
+	}
+
+	if len(vargs.Icon) == 0 {
+		vargs.Icon = defaultIcon
+	}
+
+	if len(vargs.DescTemplate) == 0 {
+		vargs.DescTemplate = defaultDescTemplate
+	}
+
+	if len(vargs.ActivityTemplate) == 0 {
+		vargs.ActivityTemplate = defaultActivityTemplate
+	}
+
+	card := &Card{
+		ID:     build.Commit,
+		Style:  "application",
+		Format: "medium",
+		Title: BuildTemplate(
+			system,
+			repo,
+			build,
+			vargs.TitleTemplate,
+		),
+		URL: BuildTemplate(
+			system,
+			repo,
+			build,
+			"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}",
+		),
+		Activity: Activity{
+			Icon: vargs.Icon,
+			HTML: BuildTemplate(
+				system,
+				repo,
+				build,
+				vargs.ActivityTemplate,
+			),
+		},
+	}
+
+	if len(build.Avatar) > 0 {
+		card.Icon = &build.Avatar
+	}
+
+	if len(vargs.DescTemplate) > 0 {
+		card.Description = &Description{
+			Format: "html",
+			Value: BuildTemplate(
+				system,
+				repo,
+				build,
+				vargs.DescTemplate,
+			),
+		}
+	}
+
+	return card
+}
 // BuildMessage renders the HipChat message from a template.
 func BuildTemplate(system *drone.System, repo *drone.Repo, build *drone.Build, tmpl string) string {
 
