@@ -4,7 +4,7 @@ about authentication tokens [here](https://www.hipchat.com/docs/apiv2/auth). You
 can override the default configuration with the following parameters:
 
 * `url` - HipChat server URL, defaults to `https://api.hipchat.com`
-* `auth_token` - HipChat API token
+* `auth_token` - HipChat V2 API token; use a room or user token with the `Send Notification` scope
 * `room_id_or_name` - ID or URL encoded name of the room
 * `from` - A label to be shown, defaults to `drone`
 * `notify` - Whether this message should trigger a user notification (change the
