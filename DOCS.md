@@ -16,10 +16,11 @@ can override the default configuration with the following parameters:
 The following is a sample configuration in your .drone.yml file:
 
 ```yaml
-notify:
+pipeline:
   hipchat:
+    image: jmccann/drone-hipchat:0.5
     auth_token: xxxxxxxxxxxxxxx
-    room_id_or_name: 1234567
+    room: 1234567
     notify: true
 ```
 
@@ -35,10 +36,11 @@ parameters:
 Example configuration that generate a custom message:
 
 ```yaml
-notify:
+pipeline:
   hipchat:
+    image: jmccann/drone-hipchat:0.5
     auth_token: xxxxxxxxxxxxxxx
-    room_id_or_name: 1234567
+    room: 1234567
     from: drone
     notify: true
     template: >
