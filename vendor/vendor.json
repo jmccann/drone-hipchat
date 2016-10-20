@@ -1,0 +1,85 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "2avCvSn0XonfApKKuTMyiQmk7s0=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "3ec0642a7fb6488f65b06f9040adc67e3990296a",
+			"revisionTime": "2016-08-29T20:23:21Z"
+		},
+		{
+			"checksumSHA1": "hjj6ZzJymmnFaocvyFpL6yR3LLU=",
+			"path": "github.com/aymerick/raymond",
+			"revision": "a2232af10b53ef1ae5a767f5178db3a6c1dab655",
+			"revisionTime": "2016-06-01T19:06:02Z"
+		},
+		{
+			"checksumSHA1": "Rvn+RH9pwFno1w6W+mhWsj/PxlA=",
+			"path": "github.com/aymerick/raymond/ast",
+			"revision": "a2232af10b53ef1ae5a767f5178db3a6c1dab655",
+			"revisionTime": "2016-06-01T19:06:02Z"
+		},
+		{
+			"checksumSHA1": "5SJwPK0MYtJt5YiE1BNc9Wl3+S0=",
+			"path": "github.com/aymerick/raymond/lexer",
+			"revision": "a2232af10b53ef1ae5a767f5178db3a6c1dab655",
+			"revisionTime": "2016-06-01T19:06:02Z"
+		},
+		{
+			"checksumSHA1": "TCu/8QBP8TApLjSt13a7Qjnyxrs=",
+			"path": "github.com/aymerick/raymond/parser",
+			"revision": "a2232af10b53ef1ae5a767f5178db3a6c1dab655",
+			"revisionTime": "2016-06-01T19:06:02Z"
+		},
+		{
+			"checksumSHA1": "RtvjNFDiM9Az32T+8iG0zESjhV0=",
+			"path": "github.com/drone/drone-go/drone",
+			"revision": "eaa41f7836a191224ec5702d2458db07882ec269",
+			"revisionTime": "2016-05-02T15:17:58Z"
+		},
+		{
+			"checksumSHA1": "IhEHLxLFpxIEUAZy7G+Gm6G27tA=",
+			"path": "github.com/drone/drone-go/template",
+			"revision": "eaa41f7836a191224ec5702d2458db07882ec269",
+			"revisionTime": "2016-05-02T15:17:58Z"
+		},
+		{
+			"checksumSHA1": "ljZrmD7pmMXAkGNfp6IEzj31fY8=",
+			"path": "github.com/joho/godotenv",
+			"revision": "4ed13390c0acd2ff4e371e64d8b97c8954138243",
+			"revisionTime": "2015-09-07T01:02:28Z"
+		},
+		{
+			"checksumSHA1": "rEIS5EfbhPRBasakArGCeOWwY8c=",
+			"path": "github.com/urfave/cli",
+			"revision": "55f715e28c46073d0e217e2ce8eb46b0b45e3db6",
+			"revisionTime": "2016-10-06T03:53:53Z"
+		},
+		{
+			"checksumSHA1": "5ARrN3Zq+E9zazFb/N+b08Serys=",
+			"path": "golang.org/x/net/context",
+			"revision": "6acef71eb69611914f7a30939ea9f6e194c78172",
+			"revisionTime": "2016-02-25T17:50:37Z"
+		},
+		{
+			"checksumSHA1": "mktBVED98G2vv+OKcSgtnFVZC1Y=",
+			"path": "golang.org/x/oauth2",
+			"revision": "2cd4472c321b6cba78e029d99f0e7fe51032fd21",
+			"revisionTime": "2016-02-22T03:00:05Z"
+		},
+		{
+			"checksumSHA1": "5I5bOhNoz/48LHx1SykyebYFOCY=",
+			"path": "golang.org/x/oauth2/internal",
+			"revision": "2cd4472c321b6cba78e029d99f0e7fe51032fd21",
+			"revisionTime": "2016-02-22T03:00:05Z"
+		},
+		{
+			"checksumSHA1": "u4rtURsE9Cn7TK4OPwH8axBMK6M=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "8d1157a435470616f975ff9bb013bea8d0962067",
+			"revisionTime": "2016-10-06T02:47:49Z"
+		}
+	],
+	"rootPath": "github.com/drone-plugins/drone-hipchat"
+}
