@@ -13,7 +13,7 @@ can override the default configuration with the following parameters:
 
 ## Example
 
-The following is a sample configuration in your .drone.yml file:
+The following is a sample configuration in your `.drone.yml` file:
 
 ```yaml
 pipeline:
