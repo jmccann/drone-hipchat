@@ -23,34 +23,34 @@ func main() {
 		// plugin args
 		//
 		cli.StringFlag{
-			Name: "hipchat.url",
+			Name: "url",
 			Usage: "HipChat server URL",
 			Value: "https://api.hipchat.com",
 			EnvVar: "PLUGIN_URL",
 		},
 		cli.StringFlag{
-			Name: "hipchat.auth_token",
+			Name: "auth_token",
 			Usage: "HipChat server URL",
 			EnvVar: "HIPCHAT_AUTH_TOKEN,PLUGIN_AUTH_TOKEN",
 		},
 		cli.StringFlag{
-			Name: "hipchat.room",
+			Name: "room",
 			Usage: "ID or URL encoded name of the room",
 			EnvVar: "PLUGIN_ROOM",
 		},
 		cli.StringFlag{
-			Name: "hipchat.from",
+			Name: "from",
 			Usage: "A label to be shown",
 			Value: "drone",
 			EnvVar: "PLUGIN_FROM",
 		},
 		cli.BoolFlag{
-			Name: "hipchat.notify",
+			Name: "notify",
 			Usage: "Whether this message should trigger a user notification (change the tab color, play a sound, notify mobile phones, etc). Each recipient's notification preferences are taken into account",
 			EnvVar: "PLUGIN_NOTIFY",
 		},
 		cli.StringFlag{
-			Name: "hipchat.template",
+			Name: "template",
 			Usage: "A handlebars template to create a custom payload body.",
 			Value: "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ build.link_url }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}",
 			EnvVar: "PLUGIN_TEMPLATE",
@@ -265,12 +265,12 @@ func run(c *cli.Context) error {
 		},
 
 		Config: Config{
-			Url:       c.String("hipchat.url"),
-			AuthToken: c.String("hipchat.auth_token"),
-			Room:      c.String("hipchat.room"),
-			From:      c.String("hipchat.from"),
-			Notify:    c.Bool("hipchat.notify"),
-			Template:  c.String("hipchat.template"),
+			Url:       c.String("url"),
+			AuthToken: c.String("auth_token"),
+			Room:      c.String("room"),
+			From:      c.String("from"),
+			Notify:    c.Bool("notify"),
+			Template:  c.String("template"),
 		},
 	}
 
