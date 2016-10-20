@@ -37,8 +37,6 @@ Execute from the working directory:
 
 ```
 docker run --rm \
-  -v $(pwd):$(pwd) \
-  -w $(pwd) \
   jmccann/drone-hipchat --notify --from JohnDoe \
   --room MyHipchatRoom --auth_token xxxxxxxxxxx
 ```
