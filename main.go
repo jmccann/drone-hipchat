@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/drone/drone-go/drone"
+	"github.com/drone/drone/model"
 	"github.com/joho/godotenv"
 	"github.com/Sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -22,6 +22,7 @@ func main() {
 		//
 		// plugin args
 		//
+
 		cli.StringFlag{
 			Name: "url",
 			Usage: "HipChat server URL",
@@ -52,7 +53,7 @@ func main() {
 		cli.StringFlag{
 			Name: "template",
 			Usage: "A handlebars template to create a custom payload body.",
-			Value: "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ build.link_url }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}",
+			Value: "<strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ build.link }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.created build.finished }} </br> - {{ build.message }}",
 			EnvVar: "PLUGIN_TEMPLATE",
 		},
 
@@ -231,7 +232,7 @@ func run(c *cli.Context) error {
 	}
 
 	plugin := Plugin{
-    Repo: &drone.Repo{
+    Repo: &model.Repo{
 			Owner:     c.String("repo.owner"),
 			Name:      c.String("repo.name"),
 			Link:      c.String("repo.link"),
@@ -241,7 +242,7 @@ func run(c *cli.Context) error {
 			IsTrusted: c.Bool("repo.trusted"),
 		},
 
-		Build: &drone.Build{
+		Build: &model.Build{
 			Number:    c.Int("build.number"),
 			Event:     c.String("build.event"),
 			Status:    c.String("build.status"),

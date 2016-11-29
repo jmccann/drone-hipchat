@@ -33,16 +33,10 @@
 			"revisionTime": "2016-06-01T19:06:02Z"
 		},
 		{
-			"checksumSHA1": "RtvjNFDiM9Az32T+8iG0zESjhV0=",
-			"path": "github.com/drone/drone-go/drone",
-			"revision": "eaa41f7836a191224ec5702d2458db07882ec269",
-			"revisionTime": "2016-05-02T15:17:58Z"
-		},
-		{
-			"checksumSHA1": "IhEHLxLFpxIEUAZy7G+Gm6G27tA=",
-			"path": "github.com/drone/drone-go/template",
-			"revision": "eaa41f7836a191224ec5702d2458db07882ec269",
-			"revisionTime": "2016-05-02T15:17:58Z"
+			"checksumSHA1": "n9n8ExsIhYypdui/VY3MeCiogNU=",
+			"path": "github.com/drone/drone/model",
+			"revision": "4de279f2770b71f18ab1da89dda46f8cd9ad8ac4",
+			"revisionTime": "2016-11-22T02:38:52Z"
 		},
 		{
 			"checksumSHA1": "ljZrmD7pmMXAkGNfp6IEzj31fY8=",

@@ -3,8 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"github.com/drone/drone-go/drone"
-	"github.com/drone/drone-go/template"
+	"github.com/drone/drone/model"
 )
 
 type (
@@ -18,8 +17,8 @@ type (
 	}
 
 	Plugin struct {
-		Repo   *drone.Repo
-		Build  *drone.Build
+		Repo   *model.Repo
+		Build  *model.Build
 		Config Config
 	}
 )
@@ -36,8 +35,7 @@ func (p Plugin) Exec() error {
 		Notify: p.Config.Notify,
 		Color:  Color(p.Build),
 		Message: BuildMessage(
-			p.Repo,
-			p.Build,
+			&p,
 			p.Config.Template),
 	}); err != nil {
 		fmt.Println(err)
@@ -49,14 +47,8 @@ func (p Plugin) Exec() error {
 }
 
 // BuildMessage renders the HipChat message from a template.
-func BuildMessage(repo *drone.Repo, build *drone.Build, tmpl string) string {
-
-	payload := &drone.Payload{
-		Repo:   repo,
-		Build:  build,
-	}
-
-	msg, err := template.RenderTrim(tmpl, payload)
+func BuildMessage(p *Plugin, tmpl string) string {
+	msg, err := RenderTrim(tmpl, p)
 	if err != nil {
 		return err.Error()
 	}
@@ -65,11 +57,11 @@ func BuildMessage(repo *drone.Repo, build *drone.Build, tmpl string) string {
 }
 
 // Color determins the notfication color based upon the current build status.
-func Color(build *drone.Build) string {
+func Color(build *model.Build) string {
 	switch build.Status {
-	case drone.StatusSuccess:
+	case model.StatusSuccess:
 		return "green"
-	case drone.StatusFailure, drone.StatusError, drone.StatusKilled:
+	case model.StatusFailure, model.StatusError, model.StatusKilled:
 		return "red"
 	default:
 		return "yellow"
