@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/drone/drone/model"
+	"github.com/drone/drone-go/drone"
 )
 
 func TestClient(t *testing.T) {
@@ -33,35 +33,32 @@ func TestClient(t *testing.T) {
 
 func TestBuildTemplate(t *testing.T) {
 	tests := []struct {
-		// repo    *model.Repo
-		// build   *model.Build
-		plugin  *Plugin
+		system  *drone.System
+		repo    *drone.Repo
+		build   *drone.Build
 		tmpl    string
 		message string
 	}{
 		{
-			plugin: &Plugin {
-				Repo:   &model.Repo{Owner: "drone-plugin", Name: "drone-hipchat"},
-				Build:  &model.Build{Commit: "1234567890", Status: "Success", Number: 123, Author: "Self", Branch: "master", Started: 1234, Finished: 1235, Message: "Complete", Link: "https://beta.drone.io/drone-plugin/drone-hipchat/123"},
-			},
-			tmpl:   "<strong>{{ uppercasefirst build.Status }}</strong> <a href=\"{{ build.Link }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.Started build.Finished }} </br> - {{ build.message }}",
-			message: `<strong>Success</strong> <a href="https://beta.drone.io/drone-plugin/drone-hipchat/123">drone-plugin/drone-hipchat#12345678</a> (master) by Self in 1s
+			system: &drone.System{Link: "https://beta.drone.io"},
+			repo:   &drone.Repo{Owner: "drone-plugin", Name: "drone-hipchat"},
+			build:  &drone.Build{Status: "Success", Number: 123, Author: "Self", Branch: "master", Started: 1234, Finished: 1235, Message: "Complete"},
+			tmpl:   defaultTemplate,
+			message: `<strong>Success</strong> <a href="https://beta.drone.io/drone-plugin/drone-hipchat/123">drone-plugin/drone-hipchat#</a> (master) by Self in 1s
  </br> - Complete`,
 		},
 		{
-			plugin: &Plugin {
-				Repo:   &model.Repo{Owner: "drone-plugin", Name: "drone-hipchat"},
-				Build:  &model.Build{Commit: "1234567890", Status: "Success", Number: 123, Author: "Self", Branch: "master", Started: 1234, Finished: 1235, Message: "Complete", Link: "https://beta.drone.io/drone-plugin/drone-hipchat/123"},
-			},
-			tmpl:   `{{ uppercasefirst build.status }} {{ build.Link }} {{ repo.owner }} {{ repo.name }} {{ build.number }} {{ repo.owner }} {{ repo.name }} {{ truncate build.commit 8 }} {{ build.branch }} {{ build.author }} {{ duration build.Started build.Finished }} {{ build.message }}`,
-			message: `Success https://beta.drone.io/drone-plugin/drone-hipchat/123 drone-plugin drone-hipchat 123 drone-plugin drone-hipchat 12345678 master Self 1s
+			system: &drone.System{Link: "https://beta.drone.io"},
+			repo:   &drone.Repo{Owner: "drone-plugin", Name: "drone-hipchat"},
+			build:  &drone.Build{Status: "Success", Number: 123, Author: "Self", Branch: "master", Started: 1234, Finished: 1235, Message: "Complete"},
+			tmpl:   `{{ uppercasefirst build.status }} {{ system.link_url }} {{ repo.owner }} {{ repo.name }} {{ build.number }} {{ repo.owner }} {{ repo.name }} {{ truncate build.commit 8 }} {{ build.branch }} {{ build.author }} {{ duration build.started_at build.finished_at }} {{ build.message }}`,
+			message: `Success https://beta.drone.io drone-plugin drone-hipchat 123 drone-plugin drone-hipchat  master Self 1s
  Complete`,
 		},
 		{
-			plugin: &Plugin {
-				Repo:   &model.Repo{Owner: "drone-plugin", Name: "drone-hipchat"},
-				Build:  &model.Build{Status: "Success", Number: 123, Author: "Self", Branch: "master", Started: 1234, Finished: 1235, Message: "Complete", Link: "https://beta.drone.io/drone-plugin/drone-hipchat/123"},
-			},
+			system: &drone.System{Link: "https://beta.drone.io"},
+			repo:   &drone.Repo{Owner: "drone-plugin", Name: "drone-hipchat"},
+			build:  &drone.Build{Status: "Success", Number: 123, Author: "Self", Branch: "master", Started: 1234, Finished: 1235, Message: "Complete"},
 			tmpl:   "{{ }",
 			message: `Parse error on line 1:
 Lexer error
@@ -70,11 +67,7 @@ Token: Error{"Unexpected character in expression: '}'"}`,
 	}
 
 	for _, test := range tests {
-<<<<<<< HEAD
 		message := BuildTemplate(test.system, test.repo, test.build, test.tmpl)
-=======
-		message := BuildMessage(test.plugin, test.tmpl)
->>>>>>> upstream/master
 		if test.message != message {
 			t.Errorf("expected message:\n %s \n got message: \n %s \n", test.message, message)
 		}
@@ -83,17 +76,17 @@ Token: Error{"Unexpected character in expression: '}'"}`,
 
 func TestColor(t *testing.T) {
 	tests := []struct {
-		build *model.Build
+		build *drone.Build
 		color string
 	}{
-		{build: &model.Build{Status: model.StatusSkipped}, color: "yellow"},
-		{build: &model.Build{Status: model.StatusPending}, color: "yellow"},
-		{build: &model.Build{Status: model.StatusRunning}, color: "yellow"},
-		{build: &model.Build{Status: model.StatusSuccess}, color: "green"},
-		{build: &model.Build{Status: model.StatusFailure}, color: "red"},
-		{build: &model.Build{Status: model.StatusKilled}, color: "red"},
-		{build: &model.Build{Status: model.StatusError}, color: "red"},
-		{build: &model.Build{Status: "foobar"}, color: "yellow"},
+		{build: &drone.Build{Status: drone.StatusSkipped}, color: "yellow"},
+		{build: &drone.Build{Status: drone.StatusPending}, color: "yellow"},
+		{build: &drone.Build{Status: drone.StatusRunning}, color: "yellow"},
+		{build: &drone.Build{Status: drone.StatusSuccess}, color: "green"},
+		{build: &drone.Build{Status: drone.StatusFailure}, color: "red"},
+		{build: &drone.Build{Status: drone.StatusKilled}, color: "red"},
+		{build: &drone.Build{Status: drone.StatusError}, color: "red"},
+		{build: &drone.Build{Status: "foobar"}, color: "yellow"},
 	}
 
 	for _, test := range tests {
