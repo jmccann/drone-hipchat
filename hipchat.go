@@ -18,12 +18,37 @@ type Client struct {
 	URL string
 }
 
+// Description represents the HipChat card description
+type Description struct {
+	Format string `json:"format"`
+	Value  string `json:"value"`
+}
+
+// Activity represents the HipChat card activity
+type Activity struct {
+	HTML  string `json:"html"`
+	Icon  string `json:"icon,omitempty"`
+}
+
+// Card represents the HipChat card
+type Card struct {
+	ID          string       `json:"id"`
+	Style       string       `json:"style"`
+	Format      string       `json:"format,omitempty"`
+	Title       string       `json:"title"`
+	URL         string       `json:"url"`
+	Icon        *string      `json:"icon,omitempty"`
+	Description *Description `json:"description,omitempty"`
+	Activity    Activity     `json:"activity,omitempty"`
+}
+
 // Message represents the HipChat notification message.
 type Message struct {
 	From    string `json:"from"`
 	Color   string `json:"color"`
 	Notify  bool   `json:"notify"`
 	Message string `json:"message"`
+	Card    *Card  `json:"card,omitempty"`
 }
 
 // NewClient returns a new HipChat Client.

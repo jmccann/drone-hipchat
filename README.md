@@ -1,42 +1,103 @@
 # drone-hipchat
 
-[![Build Status](http://beta.drone.io/api/badges/jmccann/drone-hipchat/status.svg)](http://beta.drone.io/jmccann/drone-hipchat)
+[![Build Status](http://beta.drone.io/api/badges/drone-plugins/drone-hipchat/status.svg)](http://beta.drone.io/drone-plugins/drone-hipchat)
+[![Coverage Status](https://aircover.co/badges/drone-plugins/drone-hipchat/coverage.svg)](https://aircover.co/drone-plugins/drone-hipchat)
+[![](https://badge.imagelayers.io/plugins/drone-hipchat:latest.svg)](https://imagelayers.io/?images=plugins/drone-hipchat:latest 'Get your own badge on imagelayers.io')
 
-Drone plugin to send build status notifications via HipChat. For the usage information and
-a listing of the available options please take a look at [the docs](DOCS.md).
+Drone plugin to send build status notifications via HipChat. For the usage information and a listing of the available options please take a look at [the docs](DOCS.md).
 
-## Build
+## Binary
 
-Build the binary with the following commands:
+Build the binary using `make`:
 
 ```
-go build
-go test
+make deps build
+```
+
+### Example
+
+```sh
+./drone-hipchat <<EOF
+{
+    "repo": {
+        "clone_url": "git://github.com/drone/drone",
+        "owner": "drone",
+        "name": "drone",
+        "full_name": "drone/drone"
+    },
+    "system": {
+        "link_url": "https://beta.drone.io"
+    },
+    "build": {
+        "number": 22,
+        "status": "success",
+        "started_at": 1421029603,
+        "finished_at": 1421029813,
+        "message": "Update the Readme",
+        "author": "johnsmith",
+        "author_email": "john.smith@gmail.com",
+        "event": "push",
+        "branch": "master",
+        "commit": "436b7a6e2abaddfd35740527353e78a227ddcb2c",
+        "ref": "refs/heads/master"
+    },
+    "workspace": {
+        "root": "/drone/src",
+        "path": "/drone/src/github.com/drone/drone"
+    },
+    "vargs": {
+        "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "room_id_or_name": "1234567",
+        "notify": true
+    }
+}
+EOF
 ```
 
 ## Docker
 
-Build the docker image with the following commands:
+Build the container using `make`:
 
 ```
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
-docker build --rm=true -t jmccann/drone-hipchat .
+make deps docker
 ```
 
-Please note incorrectly building the image for the correct x64 linux and with
-GCO disabled will result in an error when running the Docker image:
+### Example
 
-```
-docker: Error response from daemon: Container command
-'/bin/drone-hipchat' not found or does not exist.
-```
-
-## Usage
-
-Execute from the working directory:
-
-```
-docker run --rm \
-  jmccann/drone-hipchat --notify --from JohnDoe \
-  --room MyHipchatRoom --auth_token xxxxxxxxxxx
+```sh
+docker run -i plugins/drone-hipchat <<EOF
+{
+    "repo": {
+        "clone_url": "git://github.com/drone/drone",
+        "owner": "drone",
+        "name": "drone",
+        "full_name": "drone/drone"
+    },
+    "system": {
+        "link_url": "https://beta.drone.io"
+    },
+    "build": {
+        "number": 22,
+        "status": "success",
+        "started_at": 1421029603,
+        "finished_at": 1421029813,
+        "message": "Update the Readme",
+        "author": "johnsmith",
+        "author_email": "john.smith@gmail.com"
+        "event": "push",
+        "branch": "master",
+        "commit": "436b7a6e2abaddfd35740527353e78a227ddcb2c",
+        "ref": "refs/heads/master"
+    },
+    "workspace": {
+        "root": "/drone/src",
+        "path": "/drone/src/github.com/drone/drone"
+    },
+    "vargs": {
+        "auth_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "room_id_or_name": "1234567",
+        "notify": true
+    }
+}
+EOF
 ```
