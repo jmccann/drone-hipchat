@@ -5,21 +5,43 @@ can override the default configuration with the following parameters:
 
 * `url` - HipChat server URL, defaults to `https://api.hipchat.com`
 * `auth_token` - HipChat V2 API token; use a room or user token with the `Send Notification` scope
-* `room_id_or_name` - ID or URL encoded name of the room
+* `room` - ID or URL encoded name of the room
 * `from` - A label to be shown, defaults to `drone`
 * `notify` - Whether this message should trigger a user notification (change the
   tab color, play a sound, notify mobile phones, etc). Each recipient's
   notification preferences are taken into account, defaults to false
 
+The following secret values can be set to configure the plugin.
+
+* **HIPCHAT_AUTH_TOKEN** - corresponds to **auth_token**
+
+It is highly recommended to put the **HIPCHAT_AUTH_TOKEN** into secrets so it is
+not exposed to users. This can be done using the
+[drone-cli](http://readme.drone.io/0.5/reference/cli/overview/).
+
+```bash
+drone secret add --image=jmccann/drone-hipchat:0.5 \
+    octocat/hello-world HIPCHAT_AUTH_TOKEN mytokenhere
+```
+
+Then sign the YAML file after all secrets are added.
+
+```bash
+drone sign octocat/hello-world
+```
+
+See [secrets](http://readme.drone.io/0.5/usage/secrets/) for additional
+information on secrets
+
 ## Example
 
-The following is a sample configuration in your .drone.yml file:
+The following is a sample configuration in your `.drone.yml` file:
 
 ```yaml
-notify:
+pipeline:
   hipchat:
-    auth_token: xxxxxxxxxxxxxxx
-    room_id_or_name: 1234567
+    image: jmccann/drone-hipchat:0.5
+    room: 1234567
     notify: true
 ```
 
@@ -35,10 +57,10 @@ parameters:
 Example configuration that generate a custom message:
 
 ```yaml
-notify:
+pipeline:
   hipchat:
-    auth_token: xxxxxxxxxxxxxxx
-    room_id_or_name: 1234567
+    image: jmccann/drone-hipchat:0.5
+    room: 1234567
     from: drone
     notify: true
     template: >
