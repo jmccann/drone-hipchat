@@ -1,68 +1,95 @@
-Use this plugin for sending build status notifications via HipChat. You will
-need to supply Drone with a HipChat authentication token. You can learn more
-about authentication tokens [here](https://www.hipchat.com/docs/apiv2/auth). You
-can override the default configuration with the following parameters:
+---
+date: 2016-01-01T00:00:00+00:00
+title: Hipchat
+author: jmccann
+tags: [ notifications, chat ]
+repo: jmccann/drone-hipchat
+logo: hipchat.svg
+image: jmccann/drone-hipchat
+---
 
-* `url` - HipChat server URL, defaults to `https://api.hipchat.com`
-* `auth_token` - HipChat V2 API token; use a room or user token with the `Send Notification` scope
-* `room` - ID or URL encoded name of the room
-* `from` - A label to be shown, defaults to `drone`
-* `notify` - Whether this message should trigger a user notification (change the
-  tab color, play a sound, notify mobile phones, etc). Each recipient's
-  notification preferences are taken into account, defaults to false
+The Hipchat plugin sends build status messages to users and rooms. The below pipeline configuration demonstrates simple usage:
 
-The following secret values can be set to configure the plugin.
-
-* **HIPCHAT_AUTH_TOKEN** - corresponds to **auth_token**
-
-It is highly recommended to put the **HIPCHAT_AUTH_TOKEN** into secrets so it is
-not exposed to users. This can be done using the
-[drone-cli](http://readme.drone.io/0.5/reference/cli/overview/).
-
-```bash
-drone secret add --image=jmccann/drone-hipchat:0.5 \
-    octocat/hello-world HIPCHAT_AUTH_TOKEN mytokenhere
+```yaml
+pipeline:
+  hipchat:
+    image: jmccann/drone-hipchat
+    room: my-room
+    auth_token: my-auth-token
 ```
 
-Then sign the YAML file after all secrets are added.
+Example configuration with a custom hipchat server:
 
-```bash
+```diff
+pipeline:
+  hipchat:
+    image: jmccann/drone-hipchat
+    room: my-room
++   url: https://api.hipchat.foo.com
+```
+
+Example configuration with a custom message template:
+
+```diff
+pipeline:
+  hipchat:
+    image: jmccann/drone-hipchat
+    room: my-room
++   template: |
++     {{ #success build.status }}
++       build {{ build.number }} succeeded. Good job.
++     {{ else }}
++       build {{ build.number }} failed. Fix me please.
++     {{ /success }}
+```
+
+# Secrets
+
+The Hipchat plugin supports reading credentials from the Drone secret store. This is strongly recommended instead of storing credentials in the pipeline configuration in plain text.
+
+```diff
+pipeline:
+  slack:
+    image: jmccann/drone-hipchat
+    room: my-room
+-   auth_token: my-auth-token
+```
+
+The above `auth_token` Yaml attribute can be replaced with the `HIPCHAT_AUTH_TOKEN` secret environment variable.
+
+Use the command line utility to add secrets to the store:
+
+```nohighlight
+drone secret add --image=jmccann/drone-hipchat \
+    octocat/hello-world HIPCHAT_AUTH_TOKEN kevinbacon
+```
+
+Don't forget to sign the Yaml after making changes:
+
+```nohighlight
 drone sign octocat/hello-world
 ```
 
-See [secrets](http://readme.drone.io/0.5/usage/secrets/) for additional
-information on secrets
+Please see the [Drone documentation](http://readme.drone.io/0.5/secrets-with-plugins/) to learn more about secrets.
 
-## Example
+# Secret Reference
 
-The following is a sample configuration in your `.drone.yml` file:
+HIPCHAT_AUTH_TOKEN
+: HipChat V2 API token
 
-```yaml
-pipeline:
-  hipchat:
-    image: jmccann/drone-hipchat:0.5
-    room: 1234567
-    notify: true
-```
+# Parameter Reference
 
-### Custom Messages
+url
+: HipChat server URL, defaults to `https://api.hipchat.com`
 
-In some cases you may want to customize the body of the HipChat message you can
-use custom templates. For the use case we expose the following additional
-parameters:
+auth_token
+: HipChat V2 API token; use a room or user token with the `Send Notification` scope
 
-* `template` - A handlebars template to create a custom payload body. For more
-  details take a look at the [docs](http://handlebarsjs.com/).
+room
+: ID or URL encoded name of the room
 
-Example configuration that generate a custom message:
+from: drone
+: A label to be shown in addition to sender's name
 
-```yaml
-pipeline:
-  hipchat:
-    image: jmccann/drone-hipchat:0.5
-    room: 1234567
-    from: drone
-    notify: true
-    template: >
-      <strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}
-```
+notify: false
+: Whether this message should trigger a user notification. See https://www.hipchat.com/docs/apiv2/method/private_message_user
