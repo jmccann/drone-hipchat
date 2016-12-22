@@ -61,7 +61,7 @@ Use the command line utility to add secrets to the store:
 
 ```nohighlight
 drone secret add --image=jmccann/drone-hipchat \
-    octocat/hello-world HIPCHAT_AUTH_TOKEN kevinbacon
+    octocat/hello-world HIPCHAT_AUTH_TOKEN abcd1234
 ```
 
 Don't forget to sign the Yaml after making changes:
