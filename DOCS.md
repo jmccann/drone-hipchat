@@ -56,21 +56,7 @@ pipeline:
 ```
 
 The above `auth_token` Yaml attribute can be replaced with the `HIPCHAT_AUTH_TOKEN` secret environment variable.
-
-Use the command line utility to add secrets to the store:
-
-```nohighlight
-drone secret add --image=jmccann/drone-hipchat \
-    octocat/hello-world HIPCHAT_AUTH_TOKEN abcd1234
-```
-
-Don't forget to sign the Yaml after making changes:
-
-```nohighlight
-drone sign octocat/hello-world
-```
-
-Please see the [Drone documentation](http://readme.drone.io/0.5/secrets-with-plugins/) to learn more about secrets.
+Please see the Drone [documentation]({{< secret-link >}}) to learn more about secrets.
 
 # Secret Reference
 
