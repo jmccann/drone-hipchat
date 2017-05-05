@@ -55,6 +55,7 @@ func (c *Client) Send(msg *Message) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode >= http.StatusBadRequest {
 		t, err := ioutil.ReadAll(resp.Body)
