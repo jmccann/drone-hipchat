@@ -1,40 +1,14 @@
 package main
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/drone/drone/model"
+	"github.com/tbruyelle/hipchat-go/hipchat"
 )
-
-func TestClient(t *testing.T) {
-	hipchat := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNoContent)
-		w.Header().Set("Content-Type", "text/html")
-	}))
-	defer hipchat.Close()
-
-	client := NewClient(
-		hipchat.URL,
-		"TheIronThrone",
-		"xyz",
-	)
-
-	if err := client.Send(&Message{
-		From:    "John Snow",
-		Color:   "Green",
-		Notify:  true,
-		Message: "Testy test",
-	}); err != nil {
-		t.Error(err)
-	}
-}
 
 func TestBuildMessage(t *testing.T) {
 	tests := []struct {
-		// repo    *model.Repo
-		// build   *model.Build
 		plugin  *Plugin
 		tmpl    string
 		message string
@@ -80,16 +54,16 @@ Token: Error{"Unexpected character in expression: '}'"}`,
 func TestColor(t *testing.T) {
 	tests := []struct {
 		build *model.Build
-		color string
+		color hipchat.Color
 	}{
-		{build: &model.Build{Status: model.StatusSkipped}, color: "yellow"},
-		{build: &model.Build{Status: model.StatusPending}, color: "yellow"},
-		{build: &model.Build{Status: model.StatusRunning}, color: "yellow"},
-		{build: &model.Build{Status: model.StatusSuccess}, color: "green"},
-		{build: &model.Build{Status: model.StatusFailure}, color: "red"},
-		{build: &model.Build{Status: model.StatusKilled}, color: "red"},
-		{build: &model.Build{Status: model.StatusError}, color: "red"},
-		{build: &model.Build{Status: "foobar"}, color: "yellow"},
+		{build: &model.Build{Status: model.StatusSkipped}, color: hipchat.ColorYellow},
+		{build: &model.Build{Status: model.StatusPending}, color: hipchat.ColorYellow},
+		{build: &model.Build{Status: model.StatusRunning}, color: hipchat.ColorYellow},
+		{build: &model.Build{Status: model.StatusSuccess}, color: hipchat.ColorGreen},
+		{build: &model.Build{Status: model.StatusFailure}, color: hipchat.ColorRed},
+		{build: &model.Build{Status: model.StatusKilled}, color: hipchat.ColorRed},
+		{build: &model.Build{Status: model.StatusError}, color: hipchat.ColorRed},
+		{build: &model.Build{Status: "foobar"}, color: hipchat.ColorYellow},
 	}
 
 	for _, test := range tests {

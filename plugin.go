@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"net/url"
 	"github.com/drone/drone/model"
+	"github.com/tbruyelle/hipchat-go/hipchat"
 )
 
 type (
@@ -24,26 +24,21 @@ type (
 )
 
 func (p Plugin) Exec() error {
-	client := NewClient(
-		p.Config.Url,
-		p.Config.Room,
-		p.Config.AuthToken,
-	)
+	c := hipchat.NewClient(p.Config.AuthToken)
+	url, err := url.Parse(p.Config.Url)
 
-	if err := client.Send(&Message{
-		From:   p.Config.From,
-		Notify: p.Config.Notify,
-		Color:  Color(p.Build),
-		Message: BuildMessage(
-			&p,
-			p.Config.Template),
-	}); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-		return nil
+	if err != nil {
+		return err
 	}
 
-	return nil
+	c.BaseURL = url
+	notifRq := &hipchat.NotificationRequest{
+		Color: Color(p.Build),
+		Message: BuildMessage(&p, p.Config.Template),
+	}
+	_, err = c.Room.Notification(p.Config.Room, notifRq)
+
+	return err
 }
 
 // BuildMessage renders the HipChat message from a template.
@@ -57,13 +52,13 @@ func BuildMessage(p *Plugin, tmpl string) string {
 }
 
 // Color determins the notfication color based upon the current build status.
-func Color(build *model.Build) string {
+func Color(build *model.Build) hipchat.Color {
 	switch build.Status {
 	case model.StatusSuccess:
-		return "green"
+		return hipchat.ColorGreen
 	case model.StatusFailure, model.StatusError, model.StatusKilled:
-		return "red"
+		return hipchat.ColorRed
 	default:
-		return "yellow"
+		return hipchat.ColorYellow
 	}
 }
