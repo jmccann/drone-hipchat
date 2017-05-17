@@ -26,7 +26,7 @@ func main() {
 		cli.StringFlag{
 			Name: "url",
 			Usage: "HipChat server URL",
-			Value: "https://api.hipchat.com",
+			Value: "https://api.hipchat.com/v2/",
 			EnvVar: "PLUGIN_URL",
 		},
 		cli.StringFlag{
