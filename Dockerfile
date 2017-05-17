@@ -1,10 +1,8 @@
 # Docker image for the Drone HipChat plugin
 #
-#     cd $GOPATH/src/github.com/jmccann/drone-hipchat
-#     make deps build
-#     docker build --rm=true -t jmccann/drone-hipchat .
+#     docker build -t jmccann/drone-hipchat .
 
-FROM alpine:3.3
+FROM alpine:3.5
 
 RUN apk update && \
   apk add \
